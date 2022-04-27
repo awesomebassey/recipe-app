@@ -7,7 +7,7 @@ export default function Home() {
 
   return (
     <div className='home'>
-      {pending && <div className='pending'>Loading...</div>}
+      {pending && <div className='loading'>Loading...</div>}
       {error && <div className='error'>{error}</div>}
       {data && <RecipeList recipes={data} />}
     </div>

@@ -1,13 +1,30 @@
 import './Details.css'
-import { useFetch } from '../../hooks/useFetch'
+import { projectFirestore } from '../../firebase/config'
 import { useParams } from 'react-router-dom'
 import { useTheme } from '../../hooks/useTheme'
+import { useEffect, useState } from 'react'
 
 export default function Details() {
   const { id } = useParams()
-  const url = 'http://localhost:3000/recipes/' + id
-  const { data: recipe, pending, error } = useFetch(url)
   const {mode} = useTheme()
+  const [recipe, setRecipe] = useState(null)
+  const [pending, setPending] = useState(false)
+  const [error, setError] = useState(false)
+
+  useEffect(() => {
+    setPending(true)
+    projectFirestore.collection('recipes').doc(id).get().then(doc => {
+      if(doc.exists){
+        setPending(false)
+        setRecipe(doc.data())
+      } else {
+        setError('Something went wrong, please try again.')
+        setPending(false)
+      }
+    }).catch(err => {
+      setError(err.message)
+    })
+  }, [id])
 
   return (
     <div className={`recipe ${mode}`}>
